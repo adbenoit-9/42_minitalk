@@ -6,7 +6,7 @@
 #    By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/25 23:32:24 by adbenoit          #+#    #+#              #
-#    Updated: 2021/07/10 14:21:12 by adbenoit         ###   ########.fr        #
+#    Updated: 2021/10/08 15:45:22 by adbenoit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,10 +41,12 @@ LIB			=	$(LIB_DIR)/libft.a
 
 
 all: $(S_SRC_OBJ) $(C_SRC_OBJ) $(LIB)
-	@$(CC) $(CFLAGS) $(S_SRC) -o server $(LIB)
-	@echo "Compilation of \033[33;1m$(SERV)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m"
-	@$(CC) $(CFLAGS) $(C_SRC) -o client $(LIB)
-	@echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m"
+	@$(CC) $(CFLAGS) $(S_SRC) -o server $(LIB) && ([ $$? -eq 0 ] \
+	&& echo "Compilation of \033[33;1m$(SERV)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
+	|| echo "Compilation of \033[33;1m$(SERV)\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
+	@$(CC) $(CFLAGS) $(C_SRC) -o client $(LIB) && ([ $$? -eq 0 ] \
+	&& echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
+	|| echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
 
 $(LIB) :
 	@make -C $(LIB_DIR)
