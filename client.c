@@ -6,17 +6,66 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/10 14:09:43 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/08 16:01:49 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/09 18:50:47 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/inc/libft.h"
-#include <sys/types.h>
-#include <signal.h>
+#include "minitalk.h"
 
-int main(int ac, char **av)
+static void    ft_error(char *str)
 {
+    ft_putstr_fd("Error: ", 2);
+    ft_putendl_fd(str, 2);
+    exit(0);
+}
+
+static void    send_char(pid_t pid, char c)
+{
+    bool    bit;
+    int     i;
+
+    i = 0;
+    while (i < 8)
+    {
+        bit = (c >> i) & 1;
+        if (bit == 0)
+        {
+            if (kill(pid, SIGUSR1) == -1)
+                ft_error("No such process");
+        }
+        else
+        {
+            if (kill(pid, SIGUSR2) == -1)
+                ft_error("No such process");
+        }
+        ++i;
+        usleep(100);
+    }
+}
+
+static void    send_str(pid_t pid, char* str)
+{
+    int i;
+
+    i = 0;
+    usleep(100);
+    while (str[i])
+    {
+        send_char(pid, str[i]);
+        ++i;
+    }
+    ft_putendl_fd("The string has been sent.", 1);
+}
+
+int             main(int ac, char **av)
+{
+    pid_t pid;
+    
     if (ac != 3)
-        return (1);
-    kill(ft_atoi(av[1]), SIGUSR1);
+        ft_error("Usage: ./client [PID] [string to send]");
+    pid = ft_atoi(av[1]);
+    if (pid < 1)
+        ft_error("Wrong PID");
+    send_str(pid, av[2]);
+    return (0);
 }
