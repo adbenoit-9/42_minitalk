@@ -26,6 +26,9 @@ $ ./client [PID] [string to send]
 
 ## Tester
 
+- if the string passed to the client has been correctly displayed by the server
+- the speed of the transmission
+
 ```
 $ ./minitalk_tester
 ```
