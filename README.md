@@ -23,3 +23,12 @@ PID: [PID]
 ```
 $ ./client [PID] [string to send]
 ```
+
+## Tester
+
+```
+$ ./minitalk_tester
+```
+
+### Preview
+![Example](img/screenshot.png)
