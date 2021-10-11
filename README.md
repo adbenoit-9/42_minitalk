@@ -31,6 +31,8 @@ $ ./client [PID] [string to send]
 
 ```
 $ ./minitalk_tester
+        or
+$ ./minitalk_tester [string to send]
 ```
 
 ### Preview

@@ -6,7 +6,7 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 19:40:44 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/10 15:22:18 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/11 10:41:49 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ static void	send_str(pid_t pid, char *str)
 		send_char(pid, str[i]);
 		++i;
 	}
+	send_char(pid, 0);
 	ft_putendl_fd("The string has been sent.", 1);
 }
 

@@ -48,17 +48,42 @@ $minitalk_path/server > $server_file & server_pid=$!
 
 # Tests
 
+##  manual test
+
+if [ $# -ne 0 ]
+then
+    echo -e "\t\033[2m## Client output ##\033[0m"
+    str="$@"
+    $minitalk_path/client $server_pid $str
+    kill $server_pid 2> /dev/null
+    wait $server_pid 2> /dev/null
+    echo -e "\n\t\033[2m## Server output ##\033[0m"
+    cat $server_file
+    $time_cmd $minitalk_path/client $server_pid $str > $client_file 2>> $client_file
+    time=`cat $client_file | grep real | cut -b "9 10 11 12"`
+    len=${#str}
+    echo -e "\n____________________________________"
+    echo -e "\n⌛ $time seconds ($len characters)\n"
+    rm -rf $results_path
+    cd $minitalk_path
+    make fclean > /dev/null 2> /dev/null
+    exit 0
+fi
+
 echo -e "\t\033[2m## Tests ##\033[0m\n"
+
 time_max=1
 test_ok=0
 
 ## Utils functions
 check_string(){
+    sleep $time
     cat $server_file | grep "$@" > /dev/null 2> /dev/null
     if [ $? -ne 0 ]
     then
         test_ok=1
         echo "📨 Transmission failed ❌" >> $error_file
+        echo -e "$@\n" >> $error_file
     fi
 }
 
@@ -71,11 +96,11 @@ check_time(){
     fi
 }
 
-test_string() {
+test_transmission() {
     test_ok=0
     $time_cmd $minitalk_path/client $server_pid "$@" > $client_file 2>> $client_file
-    check_string "$@"
     check_time
+    check_string "$@"
     if [ $test_ok -eq 0 ]
     then
         echo -en $OK
@@ -87,20 +112,20 @@ test_string() {
 ## Test 1 : 10 characters
 echo "10 characters:"
 
-test_string "Hello World"
-test_string "0123456789"
-test_string "qwertyuiop"
-test_string "zxcvbnm,./"
+test_transmission "Hello World"
+test_transmission "0123456789"
+test_transmission "qwertyuiop"
+test_transmission "zxcvbnm,./"
 
 echo -e "\n"
 
 ## Test 2 : 100 characters
 echo "100 characters:"
 
-test_string "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, to"
-test_string "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV quiz graced"
-test_string "Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musi"
-test_string "A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring whi"
+test_transmission "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, to"
+test_transmission "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV quiz graced"
+test_transmission "Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musi"
+test_transmission "A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring whi"
 
 echo -e "\n"
 
@@ -108,7 +133,7 @@ echo -e "\n"
 time_max=2
 echo "1000 characters:"
 
-test_string "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. \
+test_transmission "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. \
 Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec \
 quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec \
 pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, \
@@ -119,7 +144,7 @@ nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies
 ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, \
 sem quam semper libero, sit amet adipiscing sem neque sed ipsum. N"
 
-test_string "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his \
+test_transmission "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his \
 bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see \
 his brown belly, slightly domed and divided by arches into stiff sections. The bedding was hardly able to cover \
 it and seemed ready to slide off any moment. His many legs, pitifully thin compared with the size of the rest \
@@ -129,7 +154,7 @@ textile samples lay spread out on the table - Samsa was a travelling salesman - 
 that he had recently cut out of an illustrated magazine and housed in a nice, gilded frame. It showed a lady fitted \
 out with a fur hat and fur boa who sat upright, raising a heavy fur muff that covered the whole of her lower arm towards t"
 
-test_string "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and \
+test_transmission "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and \
 I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, \
 the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but \
 because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor \
@@ -139,7 +164,7 @@ ever undertakes laborious physical exercise, except to obtain some advantage fro
 with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no \
 resultant pleasure? On the other hand, we denounc"
 
-test_string "The European languages are members of the same family. Their separate existence is a myth. For science, music, \
+test_transmission "The European languages are members of the same family. Their separate existence is a myth. For science, music, \
 sport, etc, Europe uses the same vocabulary. The languages only differ in their grammar, their pronunciation and their \
 most common words. Everyone realizes why a new common language would be desirable: one could refuse to pay expensive \
 translators. To achieve this, it would be necessary to have uniform grammar, pronunciation and more common words. If \
@@ -150,6 +175,23 @@ skeptical Cambridge friend of mine told me what Occidental is. The European lang
 Their separate existence is a myth. For science, music, spo"
 
 echo -e "\n"
+
+# Test 4 : 10000 characters
+echo "10000 characters:"
+
+test_ok=0
+bigstr=`cat bigTest.txt`
+$time_cmd $minitalk_path/client $server_pid $bigstr > $client_file 2>> $client_file
+time=`cat $client_file | grep real | cut -b "8 9 10 11 12"`
+check_string "$bigstr"
+$time_cmd $minitalk_path/client $server_pid $str > $client_file 2>> $client_file
+if [ $test_ok -eq 0 ]
+then
+    echo -e "⌛ $time seconds\n"
+else
+    echo -e $KO
+fi
+echo ""
 
 kill $server_pid 2> /dev/null
 wait $server_pid 2> /dev/null
