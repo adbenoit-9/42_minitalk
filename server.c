@@ -6,27 +6,32 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/10 14:09:58 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/11 11:28:03 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/11 23:38:18 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	handle_buffer(char *buffer, int *i)
+/* if the buffer is full, it displays it and empties it */
+
+static void	handle_buffer(char *buffer, int *i)
 {
-	if (*i == 4096)
+	if (*i == 4097)
 	{
 		buffer[*i] = 0;
 		ft_putstr_fd(buffer, 1);
-		i = 0;
+		*i = 0;
 	}
 }
 
-static void	receive_str(int signum)
+/* decode the message, send confirmation of the reception to the client
+ and display the string */
+
+static void	receive_str(int signum, siginfo_t *info, void *x)
 {
 	static int	i_bit = 0;
 	static char	byte = 0;
-	static char buffer[4098];
+	static char	buffer[4098];
 	static int	i = 0;
 
 	if (signum == SIGUSR2)
@@ -45,15 +50,23 @@ static void	receive_str(int signum)
 		byte = 0;
 		i_bit = 0;
 	}
+	if (kill(info->si_pid, SIGUSR1) == -1)
+		ft_error("No such process");
+	(void)x;
 }
 
 int	main(void)
 {
+	struct sigaction	s;
+
+	s.sa_sigaction = receive_str;
 	ft_putstr_fd("PID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putchar_fd('\n', 1);
-	signal(SIGUSR1, receive_str);
-	signal(SIGUSR2, receive_str);
+	if (sigaction(SIGUSR1, &s, NULL) < 0)
+		return (1);
+	if (sigaction(SIGUSR2, &s, NULL) < 0)
+		return (1);
 	while (1)
 		pause();
 	return (0);

@@ -11,6 +11,7 @@ error_file=results/error.log
 time_cmd=/usr/bin/time
 KO="[\033[31mKO\033[0m]"
 OK="[\033[32mOK\033[0m]"
+ERROR="[\033[33mERROR\033[0m]"
 
 rm -rf $results_path
 mkdir $results_path
@@ -54,12 +55,12 @@ if [ $# -ne 0 ]
 then
     echo -e "\t\033[2m## Client output ##\033[0m"
     str="$@"
-    $minitalk_path/client $server_pid $str
-    kill $server_pid 2> /dev/null
-    wait $server_pid 2> /dev/null
+    $minitalk_path/client $server_pid "$str"
     echo -e "\n\t\033[2m## Server output ##\033[0m"
     cat $server_file
-    $time_cmd $minitalk_path/client $server_pid $str > $client_file 2>> $client_file
+    $time_cmd $minitalk_path/client $server_pid "$str" > $client_file 2>> $client_file
+    kill $server_pid 2> /dev/null
+    wait $server_pid 2> /dev/null
     time=`cat $client_file | grep real | cut -b "9 10 11 12"`
     len=${#str}
     echo -e "\n____________________________________"
@@ -77,13 +78,16 @@ test_ok=0
 
 ## Utils functions
 check_string(){
-    sleep $time
     cat $server_file | grep "$@" > /dev/null 2> /dev/null
-    if [ $? -ne 0 ]
+    ret=$?
+    if [ $ret -eq 1 ]
     then
         test_ok=1
         echo "📨 Transmission failed ❌" >> $error_file
         echo -e "$@\n" >> $error_file
+    elif [ $ret -eq 2 ]
+    then
+        test_ok=2
     fi
 }
 
@@ -93,19 +97,23 @@ check_time(){
     then
         test_ok=1
         echo "⌛ time = $time second | time max = $time_max second ❌" >> $error_file
+    else
+        test_ok=0
     fi
 }
 
 test_transmission() {
-    test_ok=0
     $time_cmd $minitalk_path/client $server_pid "$@" > $client_file 2>> $client_file
     check_time
     check_string "$@"
     if [ $test_ok -eq 0 ]
     then
         echo -en $OK
-    else
+    elif [ $test_ok -eq 1 ]
+    then
         echo -en $KO
+    else
+        echo -en $ERROR
     fi
 }
 
@@ -177,19 +185,22 @@ Their separate existence is a myth. For science, music, spo"
 echo -e "\n"
 
 # Test 4 : 10000 characters
-echo "10000 characters:"
-
-test_ok=0
 bigstr=`cat bigTest.txt`
-$time_cmd $minitalk_path/client $server_pid $bigstr > $client_file 2>> $client_file
+len=${#bigstr}
+echo "$len characters:"
+
+$time_cmd $minitalk_path/client $server_pid "$bigstr" > $client_file 2>> $client_file
 time=`cat $client_file | grep real | cut -b "8 9 10 11 12"`
 check_string "$bigstr"
-$time_cmd $minitalk_path/client $server_pid $str > $client_file 2>> $client_file
+$time_cmd $minitalk_path/client $server_pid "$bigstr" > $client_file 2>> $client_file
 if [ $test_ok -eq 0 ]
 then
-    echo -e "⌛ $time seconds\n"
-else
+    echo -e $OK "⌛$time seconds\n"
+elif [ $test_ok -eq 1 ]
+then
     echo -e $KO
+else
+    echo -e $ERROR
 fi
 echo ""
 
