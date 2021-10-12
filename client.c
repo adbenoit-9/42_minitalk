@@ -6,19 +6,13 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 19:40:44 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/12 18:41:05 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/12 20:21:47 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-typedef struct s_server
-{
-	pid_t	pid;
-	char	*message;
-}				t_server;
-
-t_server g_serv;
+t_trans g_client;
 
 static void	ft_error(char *str)
 {
@@ -57,7 +51,7 @@ static void	send_bit(pid_t pid, bool bit)
 	}
 	else if (kill(pid, SIGUSR2) == -1)
 		ft_error("No such process");
-	ft_putchar_fd(bit + '0', 1);
+	// ft_putchar_fd(bit + '0', 1);
 }
 
 /* wait for the server confirmation to continue the transmission */
@@ -70,14 +64,14 @@ static void	sig_handle(int signum)
 		ft_error("server.");
 	else if (signum == SIGUSR1)
 	{
-		bit = get_bit(g_serv.message);
+		bit = get_bit(g_client.mess);
 		usleep(100);
 		if (bit == -1)
 		{
 			ft_putendl_fd("End of the transmission.", 1);
 			exit(EXIT_SUCCESS);
 		}
-		send_bit(g_serv.pid, bit);
+		send_bit(g_client.pid, bit);
 	}
 }
 
@@ -90,11 +84,11 @@ int	main(int ac, char **av)
 	pid = ft_atoi(av[1]);
 	if (pid < 1)
 		ft_error("Wrong PID");
-	g_serv.pid = pid;
-	g_serv.message = av[2];
+	g_client.pid = pid;
+	g_client.mess = av[2];
 	signal(SIGUSR1, sig_handle);
 	signal(SIGUSR2, sig_handle);
-	send_bit(g_serv.pid, get_bit(g_serv.message));
+	send_bit(g_client.pid, get_bit(g_client.mess));
 	while (1)
 		pause();
 	return (0);

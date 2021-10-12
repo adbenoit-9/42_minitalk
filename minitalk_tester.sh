@@ -93,10 +93,11 @@ check_string(){
 
 check_time(){
     time=`cat $client_file | grep real | cut -b "9"`
+    time1=`cat $client_file | grep real | cut -b "8 9 10 11 12"`
     if [ $time -ge $time_max ]
     then
         test_ok=1
-        echo "⌛ time = $time second | time max = $time_max second ❌" >> $error_file
+        echo "⌛ time =$time1 seconds > time max = $time_max seconds ❌" >> $error_file
     else
         test_ok=0
     fi

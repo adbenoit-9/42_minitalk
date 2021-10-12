@@ -6,7 +6,7 @@
 #    By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/25 23:32:24 by adbenoit          #+#    #+#              #
-#    Updated: 2021/10/12 02:37:52 by adbenoit         ###   ########.fr        #
+#    Updated: 2021/10/12 20:33:46 by adbenoit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ SERVER 		=	server
 CLIENT 		=	client
 
 CC			=	gcc
-CFLAGS		=	-Wall -Wextra -Werror -fsanitize=address
+CFLAGS		=	-Wall -Wextra -Werror -g3 -fsanitize=address
 
 LIB_DIR		=	libft
 LIB			=	$(LIB_DIR)/libft.a

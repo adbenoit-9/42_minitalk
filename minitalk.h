@@ -6,7 +6,7 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 17:26:24 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/12 02:37:58 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/12 20:21:52 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,11 @@
 # include <stdbool.h>
 # include <string.h>
 # include <errno.h>
+
+typedef struct s_trans
+{
+	pid_t	pid;
+	char	*mess;
+}				t_trans;
 
 #endif
