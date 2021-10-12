@@ -6,23 +6,22 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/10 14:09:58 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/12 20:36:19 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/12 20:42:15 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static void	ft_error(char *strerror, pid_t pid, char *str)
+static void	ft_error(char *strerror, pid_t pid)
 {
 	ft_putstr_fd("Error: ", 2);
 	ft_putendl_fd(strerror, 2);
 	kill(pid, SIGUSR2);
-	free(str);
 	exit(1);
 }
 
-/* decode the message, send confirmation of the reception to the client
- and display the string */
+/* returns the byte if it has been fully received.
+Otherwise returns -1. */
 
 static int	get_byte(int signum)
 {
@@ -43,11 +42,13 @@ static int	get_byte(int signum)
 	return (-1);
 }
 
+/* decode the message, send confirmation of the reception to the client
+ and display the string */
+
 static void	receive_str(int signum, siginfo_t *info, void *unused)
 {
 	int			byte;
 	static char	buffer[30000];
-	static char	*str;
 	static int	i = 0;
 
 	byte = get_byte(signum);
@@ -67,7 +68,7 @@ static void	receive_str(int signum, siginfo_t *info, void *unused)
 		}
 	}
 	if (kill(info->si_pid, SIGUSR1) == -1)
-		ft_error("No such process.", info->si_pid, str);
+		ft_error("No such process.", info->si_pid);
 	(void)unused;
 }
 

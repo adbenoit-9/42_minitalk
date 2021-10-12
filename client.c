@@ -6,13 +6,13 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 19:40:44 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/12 20:21:47 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/12 20:43:58 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-t_trans g_client;
+t_trans	g_client;
 
 static void	ft_error(char *str)
 {
@@ -51,7 +51,6 @@ static void	send_bit(pid_t pid, bool bit)
 	}
 	else if (kill(pid, SIGUSR2) == -1)
 		ft_error("No such process");
-	// ft_putchar_fd(bit + '0', 1);
 }
 
 /* wait for the server confirmation to continue the transmission */
@@ -59,7 +58,7 @@ static void	send_bit(pid_t pid, bool bit)
 static void	sig_handle(int signum)
 {
 	int	bit;
-	
+
 	if (signum == SIGUSR2)
 		ft_error("server.");
 	else if (signum == SIGUSR1)
@@ -78,7 +77,7 @@ static void	sig_handle(int signum)
 int	main(int ac, char **av)
 {
 	pid_t	pid;
-	
+
 	if (ac != 3)
 		ft_error("Usage: ./client [PID] [string to send]");
 	pid = ft_atoi(av[1]);
