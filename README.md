@@ -37,4 +37,4 @@ $ ./minitalk_tester [string to send]
 ```
 
 ### Preview
-![Example](img/screenshot.png)
+![Example](preview.png)
