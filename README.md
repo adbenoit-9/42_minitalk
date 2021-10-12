@@ -30,6 +30,7 @@ $ ./client [PID] [string to send]
 - the speed of the transmission
 
 ```
+$ cd tester/
 $ ./minitalk_tester
         or
 $ ./minitalk_tester [string to send]

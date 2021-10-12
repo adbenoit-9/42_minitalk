@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Correct paths if needed
-minitalk_path="./"
-tester_path="./"
+minitalk_path="../"
 
 results_path=results/
 client_file=results/client.out.txt
@@ -33,7 +32,7 @@ test_compile() {
         echo -e "Compilation $KO\n"
         echo -e "\033[1mMinitalk failed ❌\033[0m\n"
         make fclean > /dev/null 2> /dev/null
-        cd $tester_path
+        cd $tester_folder
         exit 1
     fi
 }
@@ -42,7 +41,7 @@ test_compile client
 test_compile server
 echo ""
 
-cd $tester_path
+cd - > /dev/null 2> /dev/null
 
 # Execution of server
 $minitalk_path/server > $server_file & server_pid=$!
@@ -217,7 +216,7 @@ else
     rm -rf $results_path
     cd $minitalk_path
     make fclean > /dev/null 2> /dev/null
-    cd $tester_path
+    cd - > /dev/null 2> /dev/null
 fi
 
 exit 0
