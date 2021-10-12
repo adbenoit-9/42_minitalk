@@ -6,7 +6,7 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 17:26:24 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/11 21:14:01 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/12 02:37:58 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,5 @@
 # include <stdbool.h>
 # include <string.h>
 # include <errno.h>
-
-void	ft_error(char *str);
 
 #endif

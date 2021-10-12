@@ -6,7 +6,7 @@
 #    By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/25 23:32:24 by adbenoit          #+#    #+#              #
-#    Updated: 2021/10/11 23:39:42 by adbenoit         ###   ########.fr        #
+#    Updated: 2021/10/12 02:37:52 by adbenoit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,12 +26,12 @@ $(LIB) :
 	@make -C $(LIB_DIR)
 
 $(SERVER):
-	@$(CC) $(CFLAGS) $(SERVER).c ft_error.c -o $(SERVER) $(LIB) && ([ $$? -eq 0 ] \
+	@$(CC) $(CFLAGS) $(SERVER).c -o $(SERVER) $(LIB) && ([ $$? -eq 0 ] \
 	&& echo "Compilation of \033[33;1m$(SERVER)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
 	|| echo "Compilation of \033[33;1m$(SERVER)\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
 	
 $(CLIENT):
-	@$(CC) $(CFLAGS) $(CLIENT).c ft_error.c -o $(CLIENT) $(LIB) && ([ $$? -eq 0 ] \
+	@$(CC) $(CFLAGS) $(CLIENT).c -o $(CLIENT) $(LIB) && ([ $$? -eq 0 ] \
 	&& echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
 	|| echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
 
@@ -43,7 +43,7 @@ fclean:
 	@rm -rf $(CLIENT)
 	@echo "\033[33;1m$(SERVER)\033[0;1m: $(SERVER) deleted\033[0m"
 	@echo "\033[33;1m$(CLIENT)\033[0;1m: $(CLIENT) deleted\033[0m"
-	@make -C $(LIB_DIR) fclean
+# make -C $(LIB_DIR) fclean
 
 re: fclean all
 

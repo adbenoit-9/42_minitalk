@@ -68,7 +68,7 @@ then
     rm -rf $results_path
     cd $minitalk_path
     make fclean > /dev/null 2> /dev/null
-    exit 0
+    exit 0 2> /dev/null
 fi
 
 echo -e "\t\033[2m## Tests ##\033[0m\n"
