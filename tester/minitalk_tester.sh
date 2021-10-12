@@ -60,7 +60,7 @@ then
     $time_cmd $minitalk_path/client $server_pid "$str" > $client_file 2>> $client_file
     kill $server_pid 2> /dev/null
     wait $server_pid 2> /dev/null
-    time=`cat $client_file | grep real | cut -b "9 10 11 12"`
+    time=`cat $client_file | grep -a real | cut -b "9 10 11 12"`
     len=${#str}
     echo -e "\n____________________________________"
     echo -e "\n⌛ $time seconds ($len characters)\n"
@@ -91,8 +91,8 @@ check_string(){
 }
 
 check_time(){
-    time=`cat $client_file | grep real | cut -b "9"`
-    time1=`cat $client_file | grep real | cut -b "8 9 10 11 12"`
+    time=`cat $client_file | grep -a real | cut -b "9"`
+    time1=`cat $client_file | grep -a real | cut -b "8 9 10 11 12"`
     if [ $time -ge $time_max ]
     then
         test_ok=1
@@ -190,9 +190,8 @@ len=${#bigstr}
 echo "$len characters:"
 
 $time_cmd $minitalk_path/client $server_pid "$bigstr" > $client_file 2>> $client_file
-time=`cat $client_file | grep real | cut -b "8 9 10 11 12"`
+time=`cat $client_file | grep -a real | cut -b "8 9 10 11 12"`
 check_string "$bigstr"
-$time_cmd $minitalk_path/client $server_pid "$bigstr" > $client_file 2>> $client_file
 if [ $test_ok -eq 0 ]
 then
     echo -e $OK "⌛$time seconds\n"
