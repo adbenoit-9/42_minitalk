@@ -6,17 +6,16 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/10 14:09:58 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/12 20:42:15 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/13 15:25:29 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static void	ft_error(char *strerror, pid_t pid)
+static void	ft_error(char *strerror)
 {
 	ft_putstr_fd("Error: ", 2);
 	ft_putendl_fd(strerror, 2);
-	kill(pid, SIGUSR2);
 	exit(1);
 }
 
@@ -68,7 +67,7 @@ static void	receive_str(int signum, siginfo_t *info, void *unused)
 		}
 	}
 	if (kill(info->si_pid, SIGUSR1) == -1)
-		ft_error("No such process.", info->si_pid);
+		ft_error("No such process.");
 	(void)unused;
 }
 

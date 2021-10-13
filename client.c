@@ -6,7 +6,7 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 19:40:44 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/13 14:32:51 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/13 15:24:01 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,13 @@ static void	sig_handle(int signum)
 {
 	int	bit;
 
-	if (signum == SIGUSR2)
-		ft_error("server.");
-	else if (signum == SIGUSR1)
+	if (signum == SIGUSR1)
 	{
 		bit = get_bit(g_client.mess);
 		usleep(100);
 		if (bit == -1)
 		{
-			ft_putendl_fd("End of the transmission.", 1);
+			ft_putstr_fd("End of the transmission.\n", 1);
 			exit(EXIT_SUCCESS);
 		}
 		send_bit(g_client.pid, bit);
@@ -86,7 +84,6 @@ int	main(int ac, char **av)
 	g_client.pid = pid;
 	g_client.mess = av[2];
 	signal(SIGUSR1, sig_handle);
-	signal(SIGUSR2, sig_handle);
 	send_bit(g_client.pid, get_bit(g_client.mess));
 	while (1)
 		pause();
