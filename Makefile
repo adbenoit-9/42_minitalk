@@ -6,7 +6,7 @@
 #    By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/08/25 23:32:24 by adbenoit          #+#    #+#              #
-#    Updated: 2021/10/12 20:33:46 by adbenoit         ###   ########.fr        #
+#    Updated: 2021/10/13 14:42:41 by adbenoit         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,25 +25,30 @@ all: $(LIB) $(SERVER) $(CLIENT)
 $(LIB) :
 	@make -C $(LIB_DIR)
 
-$(SERVER):
-	@$(CC) $(CFLAGS) $(SERVER).c -o $(SERVER) $(LIB) && ([ $$? -eq 0 ] \
+$(SERVER): $(SERVER).o
+	@$(CC) $(CFLAGS) $(SERVER).o -o $(SERVER) $(LIB) && ([ $$? -eq 0 ] \
 	&& echo "Compilation of \033[33;1m$(SERVER)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
 	|| echo "Compilation of \033[33;1m$(SERVER)\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
 	
-$(CLIENT):
-	@$(CC) $(CFLAGS) $(CLIENT).c -o $(CLIENT) $(LIB) && ([ $$? -eq 0 ] \
+$(CLIENT): $(CLIENT).o
+	@$(CC) $(CFLAGS) $(CLIENT).o -o $(CLIENT) $(LIB) && ([ $$? -eq 0 ] \
 	&& echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;32mOK\033[0;1m]\033[0m") \
 	|| echo "Compilation of \033[33;1m$(CLIENT)\033[0;1m: [\033[1;31mKO\033[0;1m]\033[0m"
 
+%.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
 	@make -C $(LIB_DIR) clean
+	@rm -rf $(SERVER).o $(CLIENT).o
+	@echo "\033[33;1mMinitalk\033[0;1m: objects deleted\033[0m"
 
 fclean:
-	@rm -rf $(SERVER)
-	@rm -rf $(CLIENT)
+	@make -C $(LIB_DIR) fclean
+	@rm -rf $(SERVER) $(CLIENT) $(SERVER).o $(CLIENT).o
+	@echo "\033[33;1mMinitalk\033[0;1m: objects deleted\033[0m"
 	@echo "\033[33;1m$(SERVER)\033[0;1m: $(SERVER) deleted\033[0m"
 	@echo "\033[33;1m$(CLIENT)\033[0;1m: $(CLIENT) deleted\033[0m"
-# make -C $(LIB_DIR) fclean
 
 re: fclean all
 

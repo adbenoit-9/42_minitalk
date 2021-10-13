@@ -54,12 +54,11 @@ if [ $# -ne 0 ]
 then
     echo -e "\t\033[2m## Client output ##\033[0m"
     str="$@"
-    $minitalk_path/client $server_pid "$str"
-    echo -e "\n\t\033[2m## Server output ##\033[0m"
-    cat $server_file
-    $time_cmd $minitalk_path/client $server_pid "$str" > $client_file 2>> $client_file
+    $time_cmd $minitalk_path/client $server_pid "$str" 2> $client_file
     kill $server_pid 2> /dev/null
     wait $server_pid 2> /dev/null
+    echo -e "\n\t\033[2m## Server output ##\033[0m"
+    cat $server_file
     time=`cat $client_file | grep -a real | cut -b "9 10 11 12"`
     len=${#str}
     echo -e "\n____________________________________"
