@@ -16,8 +16,8 @@ KO="[\033[31mKO\033[0m]"
 OK="[\033[32mOK\033[0m]"
 ERROR="[\033[33mERROR\033[0m]"
 
-rm -rf $results_path
-mkdir $results_path
+rm -rf $results_path 2> /dev/null
+mkdir $results_path 2> /dev/null
 
 ###################################################
 ################### Compilation ###################
@@ -66,13 +66,17 @@ check_string(){
     elif [ $ret -eq 2 ]
     then
         test_ok=2
+    else
+        test_ok=0
     fi
 }
 
 # Execute client and check the transmission
 
+tester_ok=0
+
 test_transmission() {
-    test_ok=0
+    # test_ok=0
     $minitalk_path/client $server_pid "$@" > $client_file 2>> $client_file
     check_string "$@"
     if [ $test_ok -eq 0 ]
@@ -80,6 +84,7 @@ test_transmission() {
         echo -en $OK
     elif [ $test_ok -eq 1 ]
     then
+        tester_ok=1
         echo -en $KO
     else
         echo -en $ERROR
@@ -104,7 +109,7 @@ then
     len=${#str}
     echo -e "\n____________________________________"
     echo -e "\nstring size = $len\n"
-    rm -rf $results_path
+    rm -rf $results_path 2> /dev/null
     cd $minitalk_path
     make fclean > /dev/null 2> /dev/null
     exit 0 2> /dev/null
@@ -187,7 +192,6 @@ bigstr=`cat bigTest.txt`
 len=${#bigstr}
 echo "$len characters:"
 $minitalk_path/client $server_pid "$bigstr" > $client_file 2>> $client_file
-test_ok=0
 check_string "$bigstr"
 if [ $test_ok -eq 0 ]
 then
@@ -210,13 +214,13 @@ wait $server_pid 2> /dev/null
 
 # Display result ans clean up
 
-if [ -e $error_file ]
+if [ $tester_ok -ne 0 ]
 then
     echo -e "\033[1mMinitalk failed ❌\033[0m"
     echo -e "Check \033[4m$error_file\033[0m\n"
 else
     echo -e "\033[1mMinitalk succeed ✅\033[0m\n"
-    rm -rf $results_path
+    rm -rf $results_path 2> /dev/null
     cd $minitalk_path
     make fclean > /dev/null 2> /dev/null
     cd - > /dev/null 2> /dev/null
