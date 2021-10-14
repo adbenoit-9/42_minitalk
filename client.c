@@ -6,7 +6,7 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 19:40:44 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/14 16:00:14 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:02:14 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static void	send_bit(pid_t pid, bool bit)
 static void	send_next_bit(int signum)
 {
 	int	bit;
-	
+
 	if (signum == SIGUSR2)
 		ft_error("Wrong signal.\nPlease relaunch the server");
 	bit = get_bit(g_client.mess);
@@ -74,6 +74,7 @@ static void	send_next_bit(int signum)
 int	main(int ac, char **av)
 {
 	pid_t	pid;
+
 	if (ac != 3)
 		ft_error("Usage: ./client [PID] [string to send]");
 	pid = ft_atoi(av[1]);
