@@ -6,7 +6,7 @@
 /*   By: adbenoit <adbenoit@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/09 19:40:44 by adbenoit          #+#    #+#             */
-/*   Updated: 2021/10/14 15:05:03 by adbenoit         ###   ########.fr       */
+/*   Updated: 2021/10/14 16:00:14 by adbenoit         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,43 +55,39 @@ static void	send_bit(pid_t pid, bool bit)
 
 /* wait for the server confirmation to continue the transmission */
 
-static void	send_next_bit(int signum, siginfo_t *info, void *unused)
+static void	send_next_bit(int signum)
 {
 	int	bit;
-
+	
 	if (signum == SIGUSR2)
-		ft_error("Transmission failed.\nPlease relaunch the server");
+		ft_error("Wrong signal.\nPlease relaunch the server");
 	bit = get_bit(g_client.mess);
+	usleep(100);
 	if (bit == -1)
 	{
 		ft_putstr_fd("End of the transmission.\n", 1);
 		exit(EXIT_SUCCESS);
 	}
-	send_bit(info->si_pid, bit);
-	(void)unused;
-	(void)signum;
+	send_bit(g_client.pid, bit);
 }
 
 int	main(int ac, char **av)
 {
-	pid_t				pid;
-	struct sigaction	s;
-
+	pid_t	pid;
 	if (ac != 3)
 		ft_error("Usage: ./client [PID] [string to send]");
 	pid = ft_atoi(av[1]);
 	if (pid < 1)
 		ft_error("Wrong PID");
-	s.sa_flags = SA_SIGINFO;
-	s.sa_sigaction = send_next_bit;
 	g_client.mess = av[2];
-	if (sigaction(SIGUSR1, &s, NULL) < 0)
-		ft_error("sigaction failed");
-	if (sigaction(SIGUSR2, &s, NULL) < 0)
-		ft_error("sigaction failed");
-	send_bit(pid, get_bit(g_client.mess));
+	g_client.pid = pid;
+	signal(SIGUSR1, send_next_bit);
+	signal(SIGUSR2, send_next_bit);
+	send_bit(g_client.pid, get_bit(g_client.mess));
 	while (1)
+	{
 		if (sleep(1) == 0)
 			ft_error("Transmission failed.\nPlease relaunch the server");
+	}
 	return (0);
 }

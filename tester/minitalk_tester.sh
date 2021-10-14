@@ -54,6 +54,7 @@ cd - > /dev/null 2> /dev/null
 # Execution of server
 
 $minitalk_path/server > $server_file & server_pid=$!
+sleep 1
 
 # Check if the string has been received by the server
 
@@ -199,6 +200,7 @@ then
 elif [ $test_ok -eq 1 ]
 then
     echo -e $KO
+    tester_ok=1
 else
     echo -e $ERROR
 fi
@@ -217,7 +219,7 @@ wait $server_pid 2> /dev/null
 if [ $tester_ok -ne 0 ]
 then
     echo -e "\033[1mMinitalk failed ❌\033[0m"
-    echo -e "Check \033[4m$error_file\033[0m\n"
+    echo -e "Check \033[4m$server_file\033[0m\n"
 else
     echo -e "\033[1mMinitalk succeed ✅\033[0m\n"
     rm -rf $results_path 2> /dev/null
