@@ -1,5 +1,10 @@
 #!/bin/bash
 
+###################################################
+################# Minitalk Tester #################
+
+echo -e "\n\033[1;34m========= MINITALK TESTER =========\033[0m\n"
+
 # Correct paths if needed
 minitalk_path="../"
 
@@ -14,12 +19,13 @@ ERROR="[\033[33mERROR\033[0m]"
 rm -rf $results_path
 mkdir $results_path
 
-# Title
-echo -e "\n\033[1;34m========= MINITALK TESTER =========\033[0m\n"
+###################################################
+################### Compilation ###################
 
-# Compilation
 cd $minitalk_path
 make re > /dev/null 2> /dev/null
+
+# check if a program have been correctly creates
 
 test_compile() {
     ls $1 > /dev/null 2> /dev/null
@@ -42,12 +48,49 @@ echo ""
 
 cd - > /dev/null 2> /dev/null
 
+###################################################
+#################### Execution ####################
+
 # Execution of server
+
 $minitalk_path/server > $server_file & server_pid=$!
 
-# Tests
+# Check if the string has been received by the server
 
-##  manual test
+check_string(){
+    cat $server_file | grep "$@" > /dev/null 2> /dev/null
+    ret=$?
+    if [ $ret -eq 1 ]
+    then
+        test_ok=1
+    elif [ $ret -eq 2 ]
+    then
+        test_ok=2
+    fi
+}
+
+# Execute client and check the transmission
+
+test_transmission() {
+    test_ok=0
+    $minitalk_path/client $server_pid "$@" > $client_file 2>> $client_file
+    check_string "$@"
+    if [ $test_ok -eq 0 ]
+    then
+        echo -en $OK
+    elif [ $test_ok -eq 1 ]
+    then
+        echo -en $KO
+    else
+        echo -en $ERROR
+    fi
+}
+
+###################################################
+###################### Tests ######################
+
+# Manual test
+# Usage:./minitalk_tester.sh [string to pass]
 
 if [ $# -ne 0 ]
 then
@@ -69,38 +112,8 @@ fi
 
 echo -e "\t\033[2m## Tests ##\033[0m\n"
 
-test_ok=0
+# Tests of 10 characters
 
-## Utils functions
-check_string(){
-    cat $server_file | grep "$@" > /dev/null 2> /dev/null
-    ret=$?
-    if [ $ret -eq 1 ]
-    then
-        test_ok=1
-        echo "📨 Transmission failed ❌" >> $error_file
-        echo -e "$@\n" >> $error_file
-    elif [ $ret -eq 2 ]
-    then
-        test_ok=2
-    fi
-}
-
-test_transmission() {
-    $minitalk_path/client $server_pid "$@" > $client_file 2>> $client_file
-    check_string "$@"
-    if [ $test_ok -eq 0 ]
-    then
-        echo -en $OK
-    elif [ $test_ok -eq 1 ]
-    then
-        echo -en $KO
-    else
-        echo -en $ERROR
-    fi
-}
-
-## Test 1 : 10 characters
 echo "10 characters:"
 
 test_transmission "Hello World"
@@ -110,7 +123,8 @@ test_transmission "zxcvbnm,./"
 
 echo -e "\n"
 
-## Test 2 : 100 characters
+# Tests of 100 characters
+
 echo "100 characters:"
 
 test_transmission "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, to"
@@ -120,7 +134,8 @@ test_transmission "A wonderful serenity has taken possession of my entire soul, 
 
 echo -e "\n"
 
-## Test 3 : 1000 characters
+# Tests of 1000 characters
+
 echo "1000 characters:"
 
 test_transmission "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. \
@@ -166,12 +181,13 @@ Their separate existence is a myth. For science, music, spo"
 
 echo -e "\n"
 
-# Test 4 : 10000 characters
+# Test of a big string
+
 bigstr=`cat bigTest.txt`
 len=${#bigstr}
 echo "$len characters:"
-
 $minitalk_path/client $server_pid "$bigstr" > $client_file 2>> $client_file
+test_ok=0
 check_string "$bigstr"
 if [ $test_ok -eq 0 ]
 then
@@ -184,8 +200,15 @@ else
 fi
 echo ""
 
+###################################################
+######################## END ######################
+
+# Stop the server
+
 kill $server_pid 2> /dev/null
 wait $server_pid 2> /dev/null
+
+# Display result ans clean up
 
 if [ -e $error_file ]
 then
